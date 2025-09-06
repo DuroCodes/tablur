@@ -2,22 +2,32 @@
 Core table formatting functions for tablur.
 """
 
-from typing import List, Tuple, Any, Optional
+from typing import List, Tuple, Any, Optional, Union, Dict
 
 DEFAULT_CHARS = ["╭", "╮", "╰", "╯", "├", "┤", "┬", "┴", "┼", "─", "│"]
 
 
 def tablur(
-    data: List[Tuple[str, List[Any]]],
+    data: Union[List[Tuple[str, List[Any]]], Dict[str, List[Any]]],
     header: Optional[str] = None,
     footer: Optional[str] = None,
     chars: Optional[List[str]] = DEFAULT_CHARS,
 ) -> str:
-    """Create a formatted table with box-drawing characters and return as string."""
+    """Create a formatted table with box-drawing characters and return as string.
+
+    Args:
+        data: Either a list of tuples (column_name, column_data) or a dict {column_name: column_data}
+        header: Optional header text for the table
+        footer: Optional footer text for the table
+        chars: Optional list of 11 box-drawing characters
+    """
     if not data:
         return "No data provided for table."
 
     assert chars is not None and len(chars) == 11, "chars must be a list of 11 characters"
+
+    if isinstance(data, dict):
+        data = list(data.items())
 
     column_names = [col[0] for col in data]
     column_data = [col[1] for col in data]
@@ -78,15 +88,26 @@ def tablur(
 
 
 def simple(
-    data: List[List[Any]],
+    data: Union[List[List[Any]], Dict[str, List[Any]]],
     headers: Optional[List[str]] = None,
     header: Optional[str] = None,
     footer: Optional[str] = None,
     chars: Optional[List[str]] = DEFAULT_CHARS,
 ) -> str:
-    """Create a table from a list of rows (each row is a list of values)."""
+    """Create a table from a list of rows (each row is a list of values) or a dictionary.
+
+    Args:
+        data: Either a list of rows (each row is a list of values) or a dict {column_name: column_data}
+        headers: Optional list of column headers (ignored if data is a dict)
+        header: Optional header text for the table
+        footer: Optional footer text for the table
+        chars: Optional list of 11 box-drawing characters
+    """
     if not data:
         return "No data provided for table."
+
+    if isinstance(data, dict):
+        return tablur(data, header, footer, chars)
 
     if not headers:
         headers = [str(i) for i in range(len(data[0]))] if data else []

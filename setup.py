@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="tablur",
-    version="1.0.0",
+    version="1.1.0",
     author="Duro",
     author_email="davidwright13503@gmail.com",
     description="a simple callable library for creating formatted tables with box-drawing characters",

@@ -8,7 +8,7 @@ a simple, callable python library for creating beautifully formatted tables with
 - create tables with box-drawing characters (╭─╮│├┼┤┴╰)
 - support for optional headers and footers
 - automatic column width calculation
-- two input formats: column-based and row-based
+- three input formats: column-based, dictionary, and row-based
 - returns formatted strings (no automatic printing)
 - lightweight and blazingly fast
 
@@ -59,6 +59,44 @@ output:
 ╰───────────────────────────────────╯
 ```
 
+### dictionary format
+
+```python
+from tablur import tablur
+
+# data can also be a dictionary where keys are column names and values are lists of data
+data = {
+    "Name": ["Alice", "Bob", "Charlie"],
+    "Age": [25, 30, 35],
+    "City": ["New York", "London", "Tokyo"],
+    "Salary": [50000, 60000, 70000],
+}
+
+# using the `tablur` function with dictionary
+table = tablur(
+    data,
+    header="Employee Directory",
+    footer="Total: 3 employees"
+)
+print(table)
+```
+
+output:
+
+```
+╭───────────────────────────────────╮
+│        Employee Directory         │
+├─────────┬─────┬──────────┬────────┤
+│ Name    │ Age │ City     │ Salary │
+├─────────┼─────┼──────────┼────────┤
+│ Alice   │ 25  │ New York │ 50000  │
+│ Bob     │ 30  │ London   │ 60000  │
+│ Charlie │ 35  │ Tokyo    │ 70000  │
+├─────────┴─────┴──────────┴────────┤
+│        Total: 3 employees         │
+╰───────────────────────────────────╯
+```
+
 ### row-based format
 
 ```python
@@ -71,10 +109,13 @@ data = [
     ["Charlie", 35, "Tokyo"]
 ]
 
-# with simple, you define the headers explicitly
+# with simple, you can define the headers explicitly or not (they default to indices)
 table = simple(data, headers=["Name", "Age", "City"])
 print(table)
 ```
+
+> [!NOTE]
+> The `simple()` function also supports dictionary format, just like `tablur()`.
 
 output:
 
