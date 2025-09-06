@@ -7,7 +7,7 @@ name = "tablur"
 version = "1.0.0"
 description = "A simple callable library for creating formatted tables with box-drawing characters"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 license = "MIT"
 authors = [{ name = "Duro", email = "davidwright13503@gmail.com" }]
 keywords = [
@@ -23,7 +23,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
