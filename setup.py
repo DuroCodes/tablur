@@ -5,10 +5,10 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="tablur",
-    version="1.1.0",
+    version="1.1.1",
     author="Duro",
     author_email="davidwright13503@gmail.com",
-    description="a simple callable library for creating formatted tables with box-drawing characters",
+    description="a simple library for creating formatted tables with box-drawing characters",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/durocodes/tablur",

@@ -1,10 +1,10 @@
 # tablur
 
-a simple, callable python library for creating beautifully formatted tables with box-drawing characters.
+a simple python library for creating beautifully formatted tables with box-drawing characters.
 
 ## features
 
-- **callable interface**: use `tablur()` directly as a function
+- **simple interface**: use `tablur()` and `simple()` functions
 - create tables with box-drawing characters (╭─╮│├┼┤┴╰)
 - support for optional headers and footers
 - automatic column width calculation
