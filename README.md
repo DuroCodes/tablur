@@ -1,5 +1,9 @@
 # tablur
 
+<div align="center">
+  <img src="./logo.png" width="400" />
+</div>
+
 a simple python library for creating beautifully formatted tables with box-drawing characters.
 
 ## features
