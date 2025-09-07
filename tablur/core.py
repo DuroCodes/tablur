@@ -2,35 +2,57 @@
 Core table formatting functions for tablur.
 """
 
-from typing import List, Tuple, Any, Optional, Union, Dict
+import importlib.util
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import pandas as pd
+
+    DataFrameType = pd.DataFrame
+else:
+    HAS_PANDAS = importlib.util.find_spec("pandas") is not None
+    if HAS_PANDAS:
+        import pandas as pd
+
+        DataFrameType = pd.DataFrame
+    else:
+        DataFrameType = object
 
 DEFAULT_CHARS = ["╭", "╮", "╰", "╯", "├", "┤", "┬", "┴", "┼", "─", "│"]
 
 
 def tablur(
-    data: Union[List[Tuple[str, List[Any]]], Dict[str, List[Any]]],
-    header: Optional[str] = None,
-    footer: Optional[str] = None,
-    chars: Optional[List[str]] = DEFAULT_CHARS,
+    data: list[tuple[str, list[object]]] | dict[str, list[object]] | DataFrameType,
+    header: str | None = None,
+    footer: str | None = None,
+    chars: list[str] | None = DEFAULT_CHARS,
 ) -> str:
     """Create a formatted table with box-drawing characters and return as string.
 
     Args:
-        data: Either a list of tuples (column_name, column_data) or a dict {column_name: column_data}
+        data: Either a list of tuples (column_name, column_data), a dict {column_name: column_data}, or a pandas DataFrame
         header: Optional header text for the table
         footer: Optional footer text for the table
         chars: Optional list of 11 box-drawing characters
     """
-    if not data:
-        return "No data provided for table."
-
     assert chars is not None and len(chars) == 11, "chars must be a list of 11 characters"
+
+    if isinstance(data, DataFrameType) and DataFrameType is not object:
+        data = {str(k): v for k, v in data.to_dict("list").items()}
+
+    if isinstance(data, (dict, list)):
+        if not data:
+            return "No data provided for table."
+
+    elif isinstance(data, DataFrameType) and DataFrameType is not object:
+        if data.empty:
+            return "No data provided for table."
 
     if isinstance(data, dict):
         data = list(data.items())
 
-    column_names = [col[0] for col in data]
-    column_data = [col[1] for col in data]
+    column_names = [col[0] for col in data]  # pyright: ignore[reportIndexIssue]
+    column_data = [col[1] for col in data]  # pyright: ignore[reportIndexIssue]
     max_length = max(len(col) for col in column_data)
 
     padded_data = [col + [""] * (max_length - len(col)) for col in column_data]
@@ -62,7 +84,7 @@ def tablur(
     separators = [chars[9] * (w + 2) for w in col_widths]
     total_width = sum(col_widths) + 3 * (len(col_widths) - 1)
 
-    lines = []
+    lines: list[str] = []
 
     if header:
         lines.append(f"{chars[0]}{chars[9].join(separators)}{chars[1]}")
@@ -88,11 +110,11 @@ def tablur(
 
 
 def simple(
-    data: Union[List[List[Any]], Dict[str, List[Any]]],
-    headers: Optional[List[str]] = None,
-    header: Optional[str] = None,
-    footer: Optional[str] = None,
-    chars: Optional[List[str]] = DEFAULT_CHARS,
+    data: list[list[object]] | dict[str, list[object]] | DataFrameType,
+    headers: list[str] | None = None,
+    header: str | None = None,
+    footer: str | None = None,
+    chars: list[str] | None = DEFAULT_CHARS,
 ) -> str:
     """Create a table from a list of rows (each row is a list of values) or a dictionary.
 
@@ -103,17 +125,31 @@ def simple(
         footer: Optional footer text for the table
         chars: Optional list of 11 box-drawing characters
     """
-    if not data:
-        return "No data provided for table."
+    assert chars is not None and len(chars) == 11, "chars must be a list of 11 characters"
+
+    if isinstance(data, DataFrameType) and DataFrameType is not object:
+        data = {str(k): v for k, v in data.to_dict("list").items()}
+
+    if isinstance(data, (dict, list)):
+        if not data:
+            return "No data provided for table."
+
+    elif isinstance(data, DataFrameType) and DataFrameType is not object:
+        if data.empty:
+            return "No data provided for table."
 
     if isinstance(data, dict):
         return tablur(data, header, footer, chars)
 
-    if not headers:
+    if isinstance(data, list):
         headers = [str(i) for i in range(len(data[0]))] if data else []
+    elif isinstance(data, DataFrameType) and DataFrameType is not object:
+        headers = list(data.columns.astype(str))
+    else:
+        headers = []
 
     formatted_data = [
-        (header, [row[i] if i < len(row) else "" for row in data])
+        (header, [row[i] if i < len(row) else "" for row in data])  # pyright: ignore[reportIndexIssue, reportArgumentType]
         for i, header in enumerate(headers)
     ]
 
