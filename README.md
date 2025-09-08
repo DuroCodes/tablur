@@ -133,6 +133,51 @@ output:
 ╰─────────┴─────┴──────────╯
 ```
 
+### pandas support
+
+tablur has built-in support for pandas DataFrames. you can pass a DataFrame directly to either `tablur()` or `simple()` functions.
+
+```python
+import pandas as pd
+from tablur import tablur
+
+df = pd.DataFrame({
+    "Product": ["Laptop", "Mouse", "Keyboard", "Monitor"],
+    "Price": [999.99, 29.99, 79.99, 299.99],
+    "Stock": [15, 50, 30, 8],
+    "Category": ["Electronics", "Accessories", "Accessories", "Electronics"]
+})
+
+table = tablur(df, header="Inventory Report", footer="Total: 4 products")
+print(table)
+```
+
+output:
+
+```
+╭─────────────────────────────────────────╮
+│            Inventory Report             │
+├──────────┬────────┬───────┬─────────────┤
+│ Product  │ Price  │ Stock │ Category    │
+├──────────┼────────┼───────┼─────────────┤
+│ Laptop   │ 999.99 │ 15    │ Electronics │
+│ Mouse    │ 29.99  │ 50    │ Accessories │
+│ Keyboard │ 79.99  │ 30    │ Accessories │
+│ Monitor  │ 299.99 │ 8     │ Electronics │
+├──────────┴────────┴───────┴─────────────┤
+│            Total: 4 products            │
+╰─────────────────────────────────────────╯
+```
+
+```python
+# Using simple with DataFrame
+table = simple(df, header="Product Catalog")
+print(table)
+```
+
+> [!NOTE]
+> pandas is an optional dependency. If pandas is not installed, the DataFrame type hints will fall back to `object`, but the functions will still work with other data formats.
+
 ## license
 
 mit, you can do whatever you want with the code :D
