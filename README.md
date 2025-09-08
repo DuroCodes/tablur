@@ -169,14 +169,8 @@ output:
 ╰─────────────────────────────────────────╯
 ```
 
-```python
-# Using simple with DataFrame
-table = simple(df, header="Product Catalog")
-print(table)
-```
-
 > [!NOTE]
-> pandas is an optional dependency. If pandas is not installed, the DataFrame type hints will fall back to `object`, but the functions will still work with other data formats.
+> pandas is an optional dependency
 
 ## license
 
