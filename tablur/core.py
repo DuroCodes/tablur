@@ -48,10 +48,10 @@ def tablur(
         if not data:
             return "No data provided for table."
 
-        # Get all unique keys, preserving order from first dictionary
-        all_keys = []
-        seen_keys = set()
-        for row in data:
+        all_keys = list(data[0].keys())
+        seen_keys = set(all_keys)
+
+        for row in data[1:]:
             if isinstance(row, dict):
                 for key in row.keys():
                     if key not in seen_keys:
@@ -166,10 +166,10 @@ def simple(
         if not data:
             return "No data provided for table."
 
-        # Get all unique keys, preserving order from first dictionary
-        all_keys = []
-        seen_keys = set()
-        for row in data:
+        all_keys = list(data[0].keys())
+        seen_keys = set(all_keys)
+
+        for row in data[1:]:
             if isinstance(row, dict):
                 for key in row.keys():
                     if key not in seen_keys:
