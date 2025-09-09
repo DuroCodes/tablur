@@ -12,7 +12,7 @@ a simple python library for creating beautifully formatted tables with box-drawi
 - create tables with box-drawing characters (╭─╮│├┼┤┴╰)
 - support for optional headers and footers
 - automatic column width calculation
-- three input formats: column-based, dictionary, and row-based
+- four input formats: column-based, dictionary, list of dictionaries, and row-based
 - returns formatted strings (no automatic printing)
 - lightweight and blazingly fast
 
@@ -101,6 +101,46 @@ output:
 ╰───────────────────────────────────╯
 ```
 
+### list of dictionaries format
+
+```python
+from tablur import tablur
+
+# data is a list of dictionaries where each dictionary represents a row
+data = [
+    {"Name": "Alice", "Age": 25, "City": "New York", "Salary": 50000},
+    {"Name": "Bob", "Age": 30, "City": "London", "Salary": 60000},
+    {"Name": "Charlie", "Age": 35, "City": "Tokyo", "Salary": 70000}
+]
+
+# using the `tablur` function with list of dictionaries
+table = tablur(
+    data,
+    header="Employee Directory",
+    footer="Total: 3 employees"
+)
+print(table)
+```
+
+output:
+
+```
+╭───────────────────────────────────╮
+│        Employee Directory         │
+├─────┬──────────┬─────────┬────────┤
+│ Age │ City     │ Name    │ Salary │
+├─────┼──────────┼─────────┼────────┤
+│ 25  │ New York │ Alice   │ 50000  │
+│ 30  │ London   │ Bob     │ 60000  │
+│ 35  │ Tokyo    │ Charlie │ 70000  │
+├─────┴──────────┴─────────┴────────┤
+│        Total: 3 employees         │
+╰───────────────────────────────────╯
+```
+
+> [!NOTE]
+> When using list of dictionaries, columns appear in the order they first appear in the data. Missing keys in any dictionary will be filled with empty strings.
+
 ### row-based format
 
 ```python
@@ -119,7 +159,7 @@ print(table)
 ```
 
 > [!NOTE]
-> The `simple()` function also supports dictionary format, just like `tablur()`.
+> The `simple()` function also supports dictionary format and list of dictionaries, just like `tablur()`.
 
 output:
 

@@ -22,7 +22,10 @@ DEFAULT_CHARS = ["╭", "╮", "╰", "╯", "├", "┤", "┬", "┴", "┼", 
 
 
 def tablur(
-    data: list[tuple[str, list[object]]] | dict[str, list[object]] | DataFrameType,
+    data: list[tuple[str, list[object]]]
+    | dict[str, list[object]]
+    | list[dict[str, object]]
+    | DataFrameType,
     header: str | None = None,
     footer: str | None = None,
     chars: list[str] | None = DEFAULT_CHARS,
@@ -30,7 +33,8 @@ def tablur(
     """Create a formatted table with box-drawing characters and return as string.
 
     Args:
-        data: Either a list of tuples (column_name, column_data), a dict {column_name: column_data}, or a pandas DataFrame
+        data: Either a list of tuples (column_name, column_data), a dict {column_name: column_data},
+              a list of dictionaries, or a pandas DataFrame
         header: Optional header text for the table
         footer: Optional footer text for the table
         chars: Optional list of 11 box-drawing characters
@@ -39,6 +43,30 @@ def tablur(
 
     if isinstance(data, DataFrameType) and DataFrameType is not object:
         data = {str(k): v for k, v in data.to_dict("list").items()}
+
+    if isinstance(data, list) and data and isinstance(data[0], dict):
+        if not data:
+            return "No data provided for table."
+
+        # Get all unique keys, preserving order from first dictionary
+        all_keys = []
+        seen_keys = set()
+        for row in data:
+            if isinstance(row, dict):
+                for key in row.keys():
+                    if key not in seen_keys:
+                        all_keys.append(key)
+                        seen_keys.add(key)
+
+        column_data = []
+        for key in all_keys:
+            column_values = []
+            for row in data:
+                if isinstance(row, dict):
+                    column_values.append(row.get(key, ""))
+            column_data.append((key, column_values))
+
+        data = column_data
 
     if isinstance(data, (dict, list)):
         if not data:
@@ -51,8 +79,12 @@ def tablur(
     if isinstance(data, dict):
         data = list(data.items())
 
-    column_names = [col[0] for col in data]  # pyright: ignore[reportIndexIssue]
-    column_data = [col[1] for col in data]  # pyright: ignore[reportIndexIssue]
+    assert isinstance(data, list) and all(isinstance(col, tuple) and len(col) == 2 for col in data)
+
+    data_tuples: list[tuple[str, list[object]]] = data  # type: ignore[assignment]
+
+    column_names = [col[0] for col in data_tuples]
+    column_data = [col[1] for col in data_tuples]
     max_length = max(len(col) for col in column_data)
 
     padded_data = [col + [""] * (max_length - len(col)) for col in column_data]
@@ -110,17 +142,17 @@ def tablur(
 
 
 def simple(
-    data: list[list[object]] | dict[str, list[object]] | DataFrameType,
+    data: list[list[object]] | dict[str, list[object]] | list[dict[str, object]] | DataFrameType,
     headers: list[str] | None = None,
     header: str | None = None,
     footer: str | None = None,
     chars: list[str] | None = DEFAULT_CHARS,
 ) -> str:
-    """Create a table from a list of rows (each row is a list of values) or a dictionary.
+    """Create a table from a list of rows (each row is a list of values), a dictionary, or a list of dictionaries.
 
     Args:
-        data: Either a list of rows (each row is a list of values) or a dict {column_name: column_data}
-        headers: Optional list of column headers (ignored if data is a dict)
+        data: Either a list of rows (each row is a list of values), a dict {column_name: column_data}, or a list of dictionaries
+        headers: Optional list of column headers (ignored if data is a dict or list of dicts)
         header: Optional header text for the table
         footer: Optional footer text for the table
         chars: Optional list of 11 box-drawing characters
@@ -129,6 +161,30 @@ def simple(
 
     if isinstance(data, DataFrameType) and DataFrameType is not object:
         data = {str(k): v for k, v in data.to_dict("list").items()}
+
+    if isinstance(data, list) and data and isinstance(data[0], dict):
+        if not data:
+            return "No data provided for table."
+
+        # Get all unique keys, preserving order from first dictionary
+        all_keys = []
+        seen_keys = set()
+        for row in data:
+            if isinstance(row, dict):
+                for key in row.keys():
+                    if key not in seen_keys:
+                        all_keys.append(key)
+                        seen_keys.add(key)
+
+        column_data = []
+        for key in all_keys:
+            column_values = []
+            for row in data:
+                if isinstance(row, dict):
+                    column_values.append(row.get(key, ""))
+            column_data.append((key, column_values))
+
+        return tablur(column_data, header, footer, chars)
 
     if isinstance(data, (dict, list)):
         if not data:
@@ -142,11 +198,14 @@ def simple(
         return tablur(data, header, footer, chars)
 
     if isinstance(data, list):
-        headers = [str(i) for i in range(len(data[0]))] if data else []
+        if headers is None:
+            headers = [str(i) for i in range(len(data[0]))] if data else []
     elif isinstance(data, DataFrameType) and DataFrameType is not object:
-        headers = list(data.columns.astype(str))
+        if headers is None:
+            headers = list(data.columns.astype(str))
     else:
-        headers = []
+        if headers is None:
+            headers = []
 
     formatted_data = [
         (header, [row[i] if i < len(row) else "" for row in data])  # pyright: ignore[reportIndexIssue, reportArgumentType]
