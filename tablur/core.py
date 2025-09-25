@@ -120,7 +120,9 @@ def tablur(
 
     if header:
         lines.append(f"{chars[0]}{chars[9].join(separators)}{chars[1]}")
-        lines.append(f"{chars[10]} {header:^{total_width}} {chars[10]}")
+        header_lines = header.split("\n")
+        for header_line in header_lines:
+            lines.append(f"{chars[10]} {header_line:^{total_width}} {chars[10]}")
         lines.append(f"{chars[4]}{chars[6].join(separators)}{chars[5]}")
     else:
         lines.append(f"{chars[0]}{chars[6].join(separators)}{chars[1]}")
@@ -133,7 +135,9 @@ def tablur(
 
     if footer:
         lines.append(f"{chars[4]}{chars[7].join(separators)}{chars[5]}")
-        lines.append(f"{chars[10]} {footer:^{total_width}} {chars[10]}")
+        footer_lines = footer.split("\n")
+        for footer_line in footer_lines:
+            lines.append(f"{chars[10]} {footer_line:^{total_width}} {chars[10]}")
         lines.append(f"{chars[2]}{chars[9].join(separators)}{chars[3]}")
     else:
         lines.append(f"{chars[2]}{chars[7].join(separators)}{chars[3]}")
