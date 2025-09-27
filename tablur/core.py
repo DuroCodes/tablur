@@ -91,7 +91,10 @@ def tablur(
     rows = [[col[i] for col in padded_data] for i in range(max_length)]
 
     all_data = [column_names] + rows
-    col_widths = [max(len(str(item)) for item in col) for col in zip(*all_data)]
+    col_widths = [
+        max(max(len(line) for line in str(item).split("\n")) for item in col)
+        for col in zip(*all_data)
+    ]
 
     min_width = 0
     if header:
@@ -127,11 +130,32 @@ def tablur(
     else:
         lines.append(f"{chars[0]}{chars[6].join(separators)}{chars[1]}")
 
-    lines.append(row_format.format(*column_names))
+    header_cells = [str(name).split("\n") for name in column_names]
+    max_header_lines = max(len(cell) for cell in header_cells)
+
+    for line_idx in range(max_header_lines):
+        row_data = []
+        for i, cell_lines in enumerate(header_cells):
+            if line_idx < len(cell_lines):
+                row_data.append(cell_lines[line_idx])
+            else:
+                row_data.append("")
+        lines.append(row_format.format(*row_data))
+
     lines.append(f"{chars[4]}{chars[8].join(separators)}{chars[5]}")
 
     for row in rows:
-        lines.append(row_format.format(*row))
+        row_cells = [str(item).split("\n") for item in row]
+        max_lines = max(len(cell) for cell in row_cells)
+
+        for line_idx in range(max_lines):
+            row_data = []
+            for i, cell_lines in enumerate(row_cells):
+                if line_idx < len(cell_lines):
+                    row_data.append(cell_lines[line_idx])
+                else:
+                    row_data.append("")
+            lines.append(row_format.format(*row_data))
 
     if footer:
         lines.append(f"{chars[4]}{chars[7].join(separators)}{chars[5]}")
